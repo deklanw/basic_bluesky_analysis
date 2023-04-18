@@ -1,0 +1,7 @@
+*.pkl
+*.graphml
+*.jpg
+node_modules/
+.env
+*.7z
+*.sqlite
