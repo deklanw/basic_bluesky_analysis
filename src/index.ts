@@ -17,8 +17,8 @@ const HUBS = new Set([
 
 const SQLITE_DB_FILE = "test.sqlite";
 const RETRY_LIMIT = 5;
-const SLEEP_TIME = 1 * 1000;
-// const SLEEP_TIME = 100;
+// const SLEEP_TIME = 1 * 1000;
+const SLEEP_TIME = 50;
 const FOLLOW_PAGE_LIMIT = 100;
 const TWO_DAYS_IN_MS = 2 * 24 * 60 * 60 * 1000;
 
@@ -178,6 +178,7 @@ const test = async () => {
         let profile: ProfileView | undefined = undefined;
 
         try {
+            let page = 1;
             while (true) {
                 const followData = await fetchWithRetry(() => fetchData(agent, crawlNext!, cursor));
 
@@ -185,7 +186,7 @@ const test = async () => {
                     throw Error("No data returned from fetch")
                 }
 
-                console.log(`Got ${followData.follows.length} follows for ${crawlNext} (cursor: ${followData.cursor})`)
+                console.log(`Got ${followData.follows.length} follows for ${crawlNext} on page ${page} (cursor: ${followData.cursor})`)
 
                 allFollowEdges.push(...followData.follows);
                 profile = followData.subject;
@@ -196,7 +197,14 @@ const test = async () => {
                     break;
                 }
 
+                if (followData.cursor === cursor) {
+                    // throw Error("Cursor didn't change, but we didn't get all the data. Something is wrong")
+                    console.log(`Cursor didn't change, but we didn't get all the data. Something is wrong. Breaking out of loop`)
+                    break;
+                }
+
                 cursor = followData.cursor;
+                page++;
             }
 
             for (const { handle } of allFollowEdges) {

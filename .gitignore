@@ -1,8 +1,12 @@
 *.pkl
 *.graphml
+*.gt
 *.jpg
 node_modules/
 .env
 *.7z
 *.sqlite
 *.png
+*.gif
+*.psd
+*.mp4
